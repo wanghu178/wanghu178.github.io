@@ -225,33 +225,9 @@
 </ul>
 </li>
 </ol>
-<h1 id="训练模型"><a href="#训练模型" class="headerlink" title="训练模型"></a>训练模型</h1><ol>
-<li>训练的模型有好有坏，这个时候需要一个评估标准，而这个标准就是成本/损失。之后我们通过某种方法最小化这个指标</li>
-<li>交叉熵和我在论文中用到的对比损失函数无疑是比较优秀的函数，而计算交叉熵需要添加一个占位符<ul>
-<li><code>y_ = tf.placeholde(&quot;float32&quot;,[None,10])</code></li>
-</ul>
-</li>
-<li>紧接着我们可以用梯度下降算法最小化我们的损失值（其实我们只需调整一行代码就可以改变最小化损失值的算法）<code>train_step=tf.train.G....(0.01).mninmize(损失函数)</code></li>
-<li>初始化然后启动<ul>
-<li><code>init=tf.initialize_all_variables()</code> </li>
-<li><code>sess=tf.Session() sess.run(init)</code>  </li>
-</ul>
-</li>
-<li>每次随机抓100个数据训练模型（这是为了减小开销，毕竟全部训练最准确（一定吗？））<ul>
-<li><code>for i in range(1000): batch_xs,batch_ys=mnist.train.next_batch(100)</code></li>
-<li><code>sess.run(train_step,feed_dict={x:batch_xs,y_:batch_ys})</code></li>
-</ul>
-</li>
-</ol>
-<h1 id="评估模型"><a href="#评估模型" class="headerlink" title="评估模型"></a>评估模型</h1><ol>
-<li>预测正确的标签必不可少。<code>tf.argmax</code>可以给出某个tensor对象在某一维上的其数据最大值所在的索引值<ul>
-<li><code>correct_prediction = tf.equal(tf.argmax(y,1),tf.argmax(y_1))</code></li>
-<li><code>accuracy=tf.reduce_mean(tf.cast(correct_prediction,&quot;float&quot;))</code></li>
-<li><code>sess.run(accuracy,feed_fict={x:mnist.test.images,y_:mnist.test.labels})</code></li>
-</ul>
-</li>
-</ol>
-
+    
+    <a class="article-more-a" href="/2020/05/03/tensorflow%E8%BF%90%E8%A1%8C%E6%96%B9%E5%BC%8F/#more">more >></a>
+    
     
 
     
@@ -1090,7 +1066,7 @@ w.assign_add(1.0)</code></p>
   }
 
   
-    var modelName = "hibiki";
+    var modelName = "wanko";
   
 
   var modelJsonPath = "";
@@ -1112,7 +1088,7 @@ w.assign_add(1.0)</code></p>
       
     },
     mobile: {
-       show: false, 
+      
        scale: 0.6 
     },
     react: {
@@ -1123,6 +1099,16 @@ w.assign_add(1.0)</code></p>
 </script>
 
   
+  
+  <script type="text/javascript" src="/lib/snow.js"></script>
+  <script type="text/javascript" src="/lib/jquery-2.1.4.min.js"></script>
+  <script>
+    snow.down();
+    $(window).resize(function() {
+      $("canvas").css("z-index","500").remove();
+      snow.down();
+    });
+  </script>
   
 </body>
 
