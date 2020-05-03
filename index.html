@@ -187,7 +187,7 @@
   
   
 <a href="/2020/05/03/tensorflow%E8%BF%90%E8%A1%8C%E6%96%B9%E5%BC%8F/" class="archive-article-date">
-        <time datetime="2020-05-03T00:51:28.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-03</time>
+        <time datetime="2020-05-03T00:51:28.526Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-03</time>
 </a>
 
   
@@ -199,7 +199,8 @@
   
   <div class="article-entry" itemprop="articleBody">
     
-    <h1 id="从hello-world-mnist-记起–tensorflow文档"><a href="#从hello-world-mnist-记起–tensorflow文档" class="headerlink" title="从hello world(mnist)记起–tensorflow文档"></a>从hello world(mnist)记起–tensorflow文档</h1><ol>
+    <p>title: tensorflow运行方式<br>date: 2020-05-03 08:51:28<br>tags: 神经网络</p>
+<h1 id="从hello-world-mnist-记起–tensorflow文档"><a href="#从hello-world-mnist-记起–tensorflow文档" class="headerlink" title="从hello world(mnist)记起–tensorflow文档"></a>从hello world(mnist)记起–tensorflow文档</h1><ol>
 <li>一个数组数组可以表示这个图像</li>
 </ol>
 <img src="http://www.tensorfly.cn/tfdoc/images/MNIST-Matrix.png" alt="img" style="zoom: 50%;" />
@@ -211,8 +212,44 @@
 </ol>
 <img src="http://www.tensorfly.cn/tfdoc/images/mnist-train-xs.png" alt="img" style="zoom: 25%;" />
 
-<ol start="3">
-<li>嗯。。。。看调剂去下午补 </li>
+<h1 id="回归模型"><a href="#回归模型" class="headerlink" title="回归模型"></a>回归模型</h1><ol>
+<li>我们希望得到给定图片属于代表每个数字的概率，softmax回归用来做这件事情分为两步<ul>
+<li>为了得到一张给定图片属于某个数字类的证据，我们对图片像素值进行加权求和</li>
+<li>如果这个图片具有很强的证据说明这种图片不属于某类，则相应的权值为负值，相反为正值</li>
+<li>加入一个偏置量来减弱干扰</li>
+<li>y=softmax(evidence)–激活函数用如下图来解释softmax模型</li>
+<li><img src="http://www.tensorfly.cn/tfdoc/images/softmax-regression-scalargraph.png" alt="img" style="zoom:50%;" /></li>
+<li>用一个向量表示这个计算过程</li>
+<li><img src="http://www.tensorfly.cn/tfdoc/images/softmax-regression-vectorequation.png" alt="img"></li>
+<li>可以表示为 y = softmax(w+b)</li>
+</ul>
+</li>
+</ol>
+<h1 id="训练模型"><a href="#训练模型" class="headerlink" title="训练模型"></a>训练模型</h1><ol>
+<li>训练的模型有好有坏，这个时候需要一个评估标准，而这个标准就是成本/损失。之后我们通过某种方法最小化这个指标</li>
+<li>交叉熵和我在论文中用到的对比损失函数无疑是比较优秀的函数，而计算交叉熵需要添加一个占位符<ul>
+<li><code>y_ = tf.placeholde(&quot;float32&quot;,[None,10])</code></li>
+</ul>
+</li>
+<li>紧接着我们可以用梯度下降算法最小化我们的损失值（其实我们只需调整一行代码就可以改变最小化损失值的算法）<code>train_step=tf.train.G....(0.01).mninmize(损失函数)</code></li>
+<li>初始化然后启动<ul>
+<li><code>init=tf.initialize_all_variables()</code> </li>
+<li><code>sess=tf.Session() sess.run(init)</code>  </li>
+</ul>
+</li>
+<li>每次随机抓100个数据训练模型（这是为了减小开销，毕竟全部训练最准确（一定吗？））<ul>
+<li><code>for i in range(1000): batch_xs,batch_ys=mnist.train.next_batch(100)</code></li>
+<li><code>sess.run(train_step,feed_dict={x:batch_xs,y_:batch_ys})</code></li>
+</ul>
+</li>
+</ol>
+<h1 id="评估模型"><a href="#评估模型" class="headerlink" title="评估模型"></a>评估模型</h1><ol>
+<li>预测正确的标签必不可少。<code>tf.argmax</code>可以给出某个tensor对象在某一维上的其数据最大值所在的索引值<ul>
+<li><code>correct_prediction = tf.equal(tf.argmax(y,1),tf.argmax(y_1))</code></li>
+<li><code>accuracy=tf.reduce_mean(tf.cast(correct_prediction,&quot;float&quot;))</code></li>
+<li><code>sess.run(accuracy,feed_fict={x:mnist.test.images,y_:mnist.test.labels})</code></li>
+</ul>
+</li>
 </ol>
 
     
@@ -225,17 +262,6 @@
   <div class="article-info article-info-index">
     
     
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">神经网络</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
     
 
     
