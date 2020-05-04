@@ -18,7 +18,7 @@
 <meta property="og:description" content="初始化权重 创建模型前需要创建大量的权重和偏置项  模型的权重在初始化时应该加入少量的噪音来打破对称性以及避免0梯度  定义两个函数用于初始化 123456def weight_variable(shape):    inital&#x3D;tf.truncated_noraml(shape,stddev&#x3D;0.1)    return tf.Variable(inital)def bias_variable">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-05-04T01:41:14.000Z">
-<meta property="article:modified_time" content="2020-05-04T08:31:02.494Z">
+<meta property="article:modified_time" content="2020-05-04T08:42:40.199Z">
 <meta property="article:author" content="虎子">
 <meta property="article:tag" content="神经网络">
 <meta name="twitter:card" content="summary">
@@ -201,7 +201,7 @@
       <!-- 百度字体平台:http://fontstore.baidu.com/static/editor/index.html -->
       <i class="icon-statistics"></i>
       <span class="post-meta-item-text"> 字数统计:</span>
-      <span class="post-count">413字</span>
+      <span class="post-count">394字</span>
     </span>
   </span>
 
@@ -231,33 +231,34 @@
 
 </li>
 </ol>
-<h1 id="卷积和池化"><a href="#卷积和池化" class="headerlink" title="卷积和池化"></a>卷积和池化</h1><a id="more"></a>
+<a id="more"></a>
 
-<ol>
+<h1 id="卷积和池化"><a href="#卷积和池化" class="headerlink" title="卷积和池化"></a>卷积和池化</h1><ol>
 <li><p>把其抽象为两个函数</p>
-</li>
-<li><pre><code class="python"><span class="function"><span class="keyword">def</span> <span class="title">conv2d</span><span class="params">(x,w)</span>:</span><span class="keyword">return</span> tf.nn.conv2d(x,w,stride=[<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>],padding=<span class="string">'SAME'</span>)
-<span class="function"><span class="keyword">def</span> <span class="title">max_pool</span><span class="params">(x)</span>:</span><span class="keyword">return</span> tf.nn.max_pool(x,ksize=[<span class="number">1</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">1</span>],
-                                      strides=[<span class="number">1</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">1</span>],padding=<span class="string">'SAME'</span>)
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">## 实现第一层（卷积+池化） </span><br><span class="line"></span><br><span class="line">1. 若一个卷积权重的形状为[5,5,1,32]，前两个代表patch的大小，接着是输入的通道数，后接着输出的通道数，而对应每一个输出通道都有一个偏置量</span><br><span class="line"></span><br><span class="line">2. 为了用到这一层我们需要改变X的形状（变为4D向量）&#96; x_image&#x3D;tf.reshape(x,[-1,28,28,1])&#96;</span><br><span class="line"></span><br><span class="line">3. 把x_image和权重向量进行卷积，加上偏置项，然后用relu激活后池化</span><br><span class="line"></span><br><span class="line">   &#96;&#96;&#96;python </span><br><span class="line">   h_conv1&#x3D;tf.nn.relu(conv2d(x_image,w_conv1)+b_conv1)</span><br><span class="line">   h_pool1&#x3D;tf.max_pool(h_conv1)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">conv2d</span><span class="params">(x,w)</span>:</span><span class="keyword">return</span> tf.nn.conv2d(x,w,stride=[<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>],padding=<span class="string">'SAME'</span>)</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">max_pool</span><span class="params">(x)</span>:</span><span class="keyword">return</span> tf.nn.max_pool(x,ksize=[<span class="number">1</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">1</span>],</span><br><span class="line">                                      strides=[<span class="number">1</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">1</span>],padding=<span class="string">'SAME'</span>)</span><br></pre></td></tr></table></figure>
 
-   <span class="comment">## 第二卷积</span>
-
-   <span class="number">1.</span> 第二层每个patch会得到<span class="number">64</span>个特征 [<span class="number">5</span>,<span class="number">5</span>,<span class="number">32</span>,<span class="number">64</span>]
-   <span class="number">2.</span> 然后如第一层一样进行第三步操作
-
-   <span class="comment">## 密集连接层</span>
-
-   <span class="number">1.</span>  图片尺寸减小到<span class="number">7</span>*<span class="number">7</span>（计算得到的）,在加入一个<span class="number">1024</span>神经元的全连接层，
-   <span class="number">2.</span> 在这个时候我们需要把池化层输出的张量reshape成一些向量，以后操作类似
-
-   <span class="comment">## 输出层</span>
-
-   <span class="number">1.</span> 输出层之前加入dropOut防止过拟合
-   <span class="number">2.</span> 
-</code></pre>
 </li>
 </ol>
+<h2 id="实现第一层（卷积-池化）"><a href="#实现第一层（卷积-池化）" class="headerlink" title="实现第一层（卷积+池化）"></a>实现第一层（卷积+池化）</h2><ol>
+<li><p>若一个卷积权重的形状为[5,5,1,32]，前两个代表patch的大小，接着是输入的通道数，后接着输出的通道数，而对应每一个输出通道都有一个偏置量</p>
+</li>
+<li><p>为了用到这一层我们需要改变X的形状（变为4D向量）<code>x_image=tf.reshape(x,[-1,28,28,1])</code></p>
+</li>
+<li><p>把x_image和权重向量进行卷积，加上偏置项，然后用relu激活后池化</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">h_conv1=tf.nn.relu(conv2d(x_image,w_conv1)+b_conv1)</span><br><span class="line">h_pool1=tf.max_pool(h_conv1)</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ol>
+<h2 id="第二卷积"><a href="#第二卷积" class="headerlink" title="第二卷积"></a>第二卷积</h2><ol>
+<li>第二层每个patch会得到64个特征 [5,5,32,64]</li>
+<li>然后如第一层一样进行第三步操作</li>
+</ol>
+<h2 id="密集连接层"><a href="#密集连接层" class="headerlink" title="密集连接层"></a>密集连接层</h2><ol>
+<li>图片尺寸减小到7*7（计算得到的）,在加入一个1024神经元的全连接层，</li>
+<li>在这个时候我们需要把池化层输出的张量reshape成一些向量，以后操作类似</li>
+</ol>
+<h2 id="输出层"><a href="#输出层" class="headerlink" title="输出层"></a>输出层</h2><p>输出层之前加入dropOut防止过拟合</p>
 
     
 
